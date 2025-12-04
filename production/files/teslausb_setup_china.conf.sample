@@ -1,0 +1,141 @@
+#####################################################################
+# TeslaUSB 中国用户配置模板
+# China-optimized Configuration Template for TeslaUSB
+#
+# 使用说明 / Instructions:
+# 1. 将此文件复制为 teslausb_setup_variables.conf
+#    Copy this file to teslausb_setup_variables.conf
+# 2. 修改下方配置项，去掉 '#' 号并填写您的信息
+#    Edit the settings below, remove '#' and fill in your information
+# 3. 保存文件后重启设备
+#    Save the file and reboot the device
+#
+######################################################################
+
+#===================================================================
+# WiFi 配置 / WiFi Configuration
+#===================================================================
+# 填写您家中的WiFi名称和密码
+# Enter your home WiFi name and password
+export SSID='你的WiFi名称'
+export WIFIPASS='你的WiFi密码'
+
+#===================================================================
+# 云存储配置 / Cloud Storage Configuration
+#===================================================================
+# 选择以下存储方案之一，取消相应注释
+# Choose one storage option and uncomment the relevant lines
+
+#-------------------------------------------------------------------
+# 方案1: 阿里云 OSS (推荐国内用户)
+# Option 1: Aliyun OSS (Recommended for China users)
+#-------------------------------------------------------------------
+export ARCHIVE_SYSTEM=rclone
+export RCLONE_DRIVE="aliyunoss"
+export RCLONE_PATH="TeslaCam"
+
+#-------------------------------------------------------------------
+# 方案2: 腾讯云 COS
+# Option 2: Tencent COS
+#-------------------------------------------------------------------
+#export ARCHIVE_SYSTEM=rclone
+#export RCLONE_DRIVE="tencentcos"
+#export RCLONE_PATH="TeslaCam"
+
+#-------------------------------------------------------------------
+# 方案3: 华为云 OBS
+# Option 3: Huawei OBS
+#-------------------------------------------------------------------
+#export ARCHIVE_SYSTEM=rclone
+#export RCLONE_DRIVE="huaweiobs"
+#export RCLONE_PATH="TeslaCam"
+
+#-------------------------------------------------------------------
+# 方案4: 七牛云存储
+# Option 4: Qiniu Kodo
+#-------------------------------------------------------------------
+#export ARCHIVE_SYSTEM=rclone
+#export RCLONE_DRIVE="qiniukodo"
+#export RCLONE_PATH="TeslaCam"
+
+#-------------------------------------------------------------------
+# 方案5: 本地 NAS (CIFS/SMB 网络共享)
+# Option 5: Local NAS (CIFS/SMB Network Share)
+#-------------------------------------------------------------------
+#export ARCHIVE_SYSTEM=cifs
+#export ARCHIVE_SERVER=192.168.1.100
+#export SHARE_NAME='TeslaCam'
+#export SHARE_USER=username
+#export SHARE_PASSWORD='password'
+
+#-------------------------------------------------------------------
+# 方案6: 不使用云存储（仅本地保存）
+# Option 6: No cloud storage (local only)
+#-------------------------------------------------------------------
+#export ARCHIVE_SYSTEM=none
+
+#===================================================================
+# 存储空间配置 / Storage Configuration
+#===================================================================
+# 行车记录仪空间 / Dashcam storage space
+# 推荐 40G-60G，根据SD卡大小调整
+# Recommended 40G-60G, adjust based on SD card size
+export CAM_SIZE=40G
+
+# 音乐空间（可选）/ Music storage space (optional)
+#export MUSIC_SIZE=4G
+
+# 灯光秀空间（可选）/ Light show storage space (optional)
+#export LIGHTSHOW_SIZE=1G
+
+# Boombox 空间（可选）/ Boombox storage space (optional)
+#export BOOMBOX_SIZE=100M
+
+#===================================================================
+# 时区配置 / Timezone Configuration
+#===================================================================
+# 中国标准时间 / China Standard Time
+export TIME_ZONE="Asia/Shanghai"
+
+#===================================================================
+# 设备配置 / Device Configuration
+#===================================================================
+# 设备名称（用于网络识别）
+# Device hostname (for network identification)
+export TESLAUSB_HOSTNAME=teslausb
+
+#===================================================================
+# 通知配置（可选）/ Notification Configuration (Optional)
+#===================================================================
+# 微信推送可通过 Webhook 实现
+# WeChat notifications can be implemented via Webhook
+
+# Webhook 通知
+#export WEBHOOK_ENABLED=true
+#export WEBHOOK_URL="https://your-webhook-url"
+
+# Telegram 通知
+#export TELEGRAM_ENABLED=true
+#export TELEGRAM_CHAT_ID=123456789
+#export TELEGRAM_BOT_TOKEN=your_bot_token
+
+#===================================================================
+# 高级配置 / Advanced Configuration
+#===================================================================
+# 快照间隔（秒），用于保留更多录像历史
+# Snapshot interval (seconds), for keeping more recording history
+#export SNAPSHOT_INTERVAL=480
+
+# 是否归档最近录像
+# Whether to archive recent clips
+#export ARCHIVE_RECENTCLIPS=true
+
+# SSH 公钥认证（更安全）
+# SSH public key authentication (more secure)
+#export SSH_ROOT_PUBLIC_KEY='ssh-rsa AAAAB... user@host'
+
+# 温度监控阈值（毫摄氏度）
+# Temperature monitoring thresholds (milli-Celsius)
+#export TEMPERATURE_WARNING=68000
+#export TEMPERATURE_CAUTION=55000
+export TEMPERATURE_POSTARCHIVE=true
