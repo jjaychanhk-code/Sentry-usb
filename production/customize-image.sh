@@ -138,12 +138,12 @@ set -e
 # Update package list
 apt-get update
 
-# Try to install rclone from repository first
+# Install rclone from repository (preferred method for security)
 if apt-get install -y rclone; then
     echo "rclone installed from repository"
 else
-    # Fallback to manual installation
-    curl https://rclone.org/install.sh | bash
+    echo "Warning: Could not install rclone from repository"
+    echo "Please install rclone manually after setup using: curl https://rclone.org/install.sh | sudo bash"
 fi
 
 # Install jq for JSON processing

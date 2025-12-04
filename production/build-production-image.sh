@@ -115,7 +115,7 @@ PACKAGES
 #!/bin/bash -e
 
 # Install China-optimized configuration templates
-install -m 666 files/teslausb_setup_china.conf.sample "${ROOTFS_DIR}/boot/firmware/"
+install -m 644 files/teslausb_setup_china.conf.sample "${ROOTFS_DIR}/boot/firmware/"
 
 # Pre-configure rclone templates for Chinese cloud providers
 mkdir -p "${ROOTFS_DIR}/root/.config/rclone"
@@ -347,7 +347,9 @@ function build_image() {
     
     if [ "$USE_CHINA_MIRROR" = true ]; then
         print_info "Using China mirrors for faster download..."
-        export APT_PROXY="https://mirrors.aliyun.com/raspbian/raspbian/"
+        # Note: Configure mirror in /etc/apt/sources.list inside the image instead
+        # APT_PROXY would require a proxy server, not a mirror URL
+        print_info "China mirror support requires manual configuration of sources.list"
     fi
     
     # Build the image

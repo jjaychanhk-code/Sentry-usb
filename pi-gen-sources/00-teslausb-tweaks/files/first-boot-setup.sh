@@ -172,7 +172,8 @@ case "$choice" in
         echo ""
         echo "配置阿里云 OSS..."
         read -p "Access Key ID: " access_key
-        read -p "Secret Access Key: " secret_key
+        read -sp "Secret Access Key: " secret_key
+        echo
         read -p "区域端点 (默认 oss-cn-hangzhou.aliyuncs.com): " endpoint
         endpoint=${endpoint:-oss-cn-hangzhou.aliyuncs.com}
         
@@ -195,7 +196,8 @@ EOF
         echo ""
         echo "配置腾讯云 COS..."
         read -p "Secret ID: " access_key
-        read -p "Secret Key: " secret_key
+        read -sp "Secret Key: " secret_key
+        echo
         read -p "区域端点 (默认 cos.ap-guangzhou.myqcloud.com): " endpoint
         endpoint=${endpoint:-cos.ap-guangzhou.myqcloud.com}
         
@@ -218,7 +220,8 @@ EOF
         echo ""
         echo "配置华为云 OBS..."
         read -p "Access Key: " access_key
-        read -p "Secret Key: " secret_key
+        read -sp "Secret Key: " secret_key
+        echo
         read -p "区域端点 (默认 obs.cn-north-4.myhuaweicloud.com): " endpoint
         endpoint=${endpoint:-obs.cn-north-4.myhuaweicloud.com}
         
@@ -241,7 +244,8 @@ EOF
         echo ""
         echo "配置七牛云..."
         read -p "Access Key: " access_key
-        read -p "Secret Key: " secret_key
+        read -sp "Secret Key: " secret_key
+        echo
         read -p "区域端点 (默认 s3-cn-east-1.qiniucs.com): " endpoint
         endpoint=${endpoint:-s3-cn-east-1.qiniucs.com}
         
@@ -264,7 +268,8 @@ EOF
         echo ""
         echo "配置坚果云..."
         read -p "邮箱账号: " email
-        read -p "WebDAV 密码 (非登录密码): " webdav_pass
+        read -sp "WebDAV 密码 (非登录密码): " webdav_pass
+        echo
         
         mkdir -p "$CONFIG_DIR"
         cat > "$CONFIG_FILE" << EOF
@@ -290,7 +295,12 @@ esac
 
 echo ""
 echo "配置完成！"
-echo "如需修改 teslausb_setup_variables.conf 中的 RCLONE_DRIVE 值"
+echo "如需修改 teslausb_setup_variables.conf 中的 RCLONE_DRIVE 值，请运行:"
+echo "  nano /root/teslausb_setup_variables.conf"
+echo ""
+echo "Configuration complete!"
+echo "To modify the RCLONE_DRIVE value in teslausb_setup_variables.conf, run:"
+echo "  nano /root/teslausb_setup_variables.conf"
 HELPER
 
     chmod +x "$helper_dir/configure-rclone"
