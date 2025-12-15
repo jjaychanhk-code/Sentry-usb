@@ -10,3 +10,13 @@ Raspberry Pi and other [SBCs](## "Single Board Computers") can emulate a USB dri
 - serve up a web UI to view or download the recordings
 - retain more than one hour of RecentClips (assuming large enough storage)
 
+## Documentation
+
+For detailed information about archiving options:
+
+- **[NFS Archiving Support](doc/NFSArchivingSupport.md)** - Comprehensive guide to NFS-based archiving ([中文版](doc/NFSArchivingSupport_CN.md))
+  - **[Setup NFS](doc/SetupNFS.md)** - Step-by-step NFS setup guide
+- **[Setup Archive Share](doc/SetupShare.md)** - Guide for CIFS/SMB archiving
+- **[Setup RSync](doc/SetupRSync.md)** - Guide for rsync-based archiving
+- **[Setup RClone](doc/SetupRClone.md)** - Guide for cloud storage archiving
+
