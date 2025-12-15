@@ -77,7 +77,10 @@ rclone config
 # 选择以下选项 / Choose the following options:
 # n) New remote
 # name> aliyun-oss
-# Storage> 5 (Alibaba Cloud Object Storage System)
+# Storage> (查找 "Alibaba Cloud Object Storage System" 的编号)
+#         (Find the number for "Alibaba Cloud Object Storage System")
+#         注意：编号可能因 rclone 版本而异，请在列表中查找
+#         Note: Number may vary by rclone version, find it in the list
 # provider> Alibaba
 # access_key_id> 你的 AccessKey ID / Your AccessKey ID
 # access_key_secret> 你的 AccessKey Secret / Your AccessKey Secret
@@ -153,7 +156,10 @@ rclone config
 # 选择以下选项 / Choose the following options:
 # n) New remote
 # name> tencent-cos
-# Storage> 43 (Tencent Cloud Object Storage)
+# Storage> (查找 "Tencent Cloud Object Storage" 的编号)
+#         (Find the number for "Tencent Cloud Object Storage")
+#         注意：编号可能因 rclone 版本而异，请在列表中查找
+#         Note: Number may vary by rclone version, find it in the list
 # provider> TencentCOS
 # env_auth> false
 # access_key_id> 你的 SecretId / Your SecretId
@@ -182,6 +188,10 @@ export RCLONE_PATH="teslacam-videos"
 # 挂载腾讯云 COS 到本地 / Mount Tencent COS locally
 
 # 使用 cosfs 工具
+# 请访问 https://github.com/tencentyun/cosfs/releases 查看最新版本
+# Visit https://github.com/tencentyun/cosfs/releases for latest version
+# 示例使用 v1.0.19，请根据您的系统和最新版本调整
+# Example uses v1.0.19, adjust for your system and latest version
 wget https://github.com/tencentyun/cosfs/releases/download/v1.0.19/cosfs_1.0.19-ubuntu20.04_amd64.deb
 sudo dpkg -i cosfs_1.0.19-ubuntu20.04_amd64.deb
 
