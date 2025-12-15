@@ -1,0 +1,187 @@
+# TeslaUSB Production Configuration Template
+#
+# This is a template configuration file for deploying TeslaUSB in a production
+# environment to allow customers to view their Tesla Sentry and dashcam videos.
+#
+# Copy this file to teslausb_setup_variables.conf and customize for your deployment.
+#
+# For detailed setup instructions, see: doc/ProductionDeployment.md
+# For customer usage guide, see: doc/CustomerQuickStart.md
+
+#####################################################################
+# BASIC CONFIGURATION
+#####################################################################
+
+# WiFi Settings - Required for remote access
+export SSID='Your_WiFi_Network_Name'
+export WIFIPASS='Your_WiFi_Password'
+
+# Archive Method - Choose one:
+# - 'none' = No automatic archiving (simple USB storage)
+# - 'rsync' = Archive to network share via rsync
+# - 'rclone' = Archive to cloud storage
+# - 'cifs' = Archive to Windows/Samba share
+export ARCHIVE_METHOD=none
+
+# Camera Settings
+export CAM_SIZE=90%          # Percentage of storage for dashcam (90% recommended)
+
+#####################################################################
+# PRODUCTION FEATURES
+#####################################################################
+
+# Hostname - Customers will access at http://[HOSTNAME].local
+export HOSTNAME=teslausb
+
+# Time Zone - Set to customer's location
+export TIMEZONE=America/Los_Angeles
+
+# Push Notifications (Optional)
+# Notify customers when new Sentry events are recorded
+# Uncomment and configure ONE of the following:
+
+# Pushover (recommended for customers)
+# export PUSHOVER_ENABLED=true
+# export PUSHOVER_USER_KEY=your_user_key
+# export PUSHOVER_APP_KEY=your_app_key
+
+# Telegram
+# export TELEGRAM_ENABLED=true
+# export TELEGRAM_CHAT_ID=your_chat_id
+# export TELEGRAM_TOKEN=your_bot_token
+
+# IFTTT
+# export IFTTT_ENABLED=true
+# export IFTTT_EVENT_NAME=your_event_name
+# export IFTTT_KEY=your_webhook_key
+
+#####################################################################
+# ARCHIVING CONFIGURATION (if not using 'none')
+#####################################################################
+
+# Archive Server Settings (for rsync/cifs)
+# export ARCHIVE_SERVER=192.168.1.100
+# export ARCHIVE_PATH=/mnt/teslausb
+# export RSYNC_USER=pi
+# export RSYNC_PASS=your_password
+
+# Archive Frequency
+# How long to wait when idle before archiving (seconds)
+# Default: 1800 (30 minutes)
+# For faster access to new videos, reduce this value:
+# export ARCHIVE_IDLE_WAIT=300  # 5 minutes
+
+#####################################################################
+# SECURITY SETTINGS FOR PRODUCTION
+#####################################################################
+
+# SSH Configuration
+# IMPORTANT: Change the default password!
+# After first boot, run:
+#   ssh pi@teslausb.local
+#   sudo -i
+#   /root/bin/remountfs_rw
+#   passwd pi
+#   reboot
+
+# Web Interface Authentication
+# For production deployments, you should add authentication
+# See: doc/ProductionDeployment.md for nginx configuration
+
+#####################################################################
+# ADVANCED SETTINGS
+#####################################################################
+
+# Music/Boombox/LightShow Support (Optional)
+# export MUSIC_SHARE_ENABLED=true
+# export MUSIC_ARCHIVE_SERVER=192.168.1.100
+# export MUSIC_ARCHIVE_PATH=/mnt/music
+# export MUSIC_SIZE=10%
+
+# Boombox Support
+# export BOOMBOX_SHARE_ENABLED=true
+# export BOOMBOX_SIZE=5%
+
+# LightShow Support  
+# export LIGHTSHOW_SHARE_ENABLED=true
+# export LIGHTSHOW_SIZE=5%
+
+# Sentry Mode Optimization
+# Reduce wear on SD card by using temporary storage
+export USE_LED_FOR_SETUP_PROGRESS=true
+
+# AP (Access Point) Mode - Create WiFi hotspot
+# Useful if customer doesn't have home WiFi
+# export AP_SSID='TeslaUSB Setup'
+# export AP_PASS='setuppassword'
+# export AP_IP_ADDRESS=192.168.100.1
+
+#####################################################################
+# MONITORING AND MAINTENANCE
+#####################################################################
+
+# Email Notifications (Optional)
+# Get notified about system issues
+# export EMAIL_ENABLED=true
+# export EMAIL_TO=admin@example.com
+# export EMAIL_FROM=teslausb@example.com
+
+# Automatic Updates (Use with caution in production)
+# export UPGRADE_PACKAGES=true
+
+# Snapshot Configuration
+# Create snapshots before archiving (allows restore if corruption)
+export SNAPSHOTS_ENABLED=true
+
+#####################################################################
+# CUSTOMER CUSTOMIZATION
+#####################################################################
+
+# Customer Identification
+# Add a file to identify this installation
+# export CUSTOMER_NAME="John Doe"
+# export VEHICLE_VIN="5YJ3E1EA1JF000000"
+# export INSTALLATION_DATE="2024-01-15"
+
+# Custom Web Page Title
+# Modify teslausb-www/html/index.html to show customer name
+
+#####################################################################
+# NOTES FOR PRODUCTION DEPLOYMENT
+#####################################################################
+
+# 1. SECURITY FIRST
+#    - Always change default passwords
+#    - Use VPN (Tailscale) or properly secured HTTPS for remote access
+#    - Keep system updated: sudo apt update && sudo apt upgrade
+#    - Monitor access logs
+
+# 2. BACKUP CONFIGURATION
+#    - Save a copy of this file
+#    - Document customer-specific settings
+#    - Keep installation notes
+
+# 3. CUSTOMER DOCUMENTATION
+#    - Provide customer with Quick Start Guide (doc/CustomerQuickStart.md)
+#    - Share access URL/credentials securely
+#    - Set up push notifications for new events
+
+# 4. TESTING CHECKLIST
+#    - [ ] Web interface loads at http://teslausb.local
+#    - [ ] Can view existing videos
+#    - [ ] Remote access works (VPN or public)
+#    - [ ] Authentication works (if configured)
+#    - [ ] Push notifications work (if configured)
+#    - [ ] Videos archive properly (if configured)
+#    - [ ] Mobile access works
+#    - [ ] SSL certificate valid (if using HTTPS)
+
+# 5. SUPPORT
+#    - Main documentation: https://github.com/marcone/teslausb
+#    - Production guide: doc/ProductionDeployment.md
+#    - Customer guide: doc/CustomerQuickStart.md
+#    - Issues: https://github.com/marcone/teslausb/issues
+
+#####################################################################
+# END OF CONFIGURATION
+#####################################################################
