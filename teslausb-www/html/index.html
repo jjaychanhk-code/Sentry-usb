@@ -1861,6 +1861,9 @@ function setupAutoRefresh() {
   log("Setting up auto-refresh");
   clearAutoRefresh();
   // Refresh every 5 minutes (300000 ms)
+  // Note: This performs a full page reload for simplicity and minimal code changes.
+  // A future enhancement could use AJAX to refresh only the video list data
+  // without reloading the entire page, which would preserve user state.
   autoRefreshTimer = setInterval(function() {
     log("Auto-refreshing video list...");
     // Reload the page to check for new videos

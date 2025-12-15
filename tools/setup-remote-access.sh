@@ -44,6 +44,22 @@ check_internet() {
     fi
 }
 
+get_tailscale_hostname() {
+    local hostname=""
+    
+    # Try to get hostname with jq first, fallback to grep if jq not available
+    if command -v jq &> /dev/null; then
+        hostname=$(tailscale status --json 2>/dev/null | jq -r '.Self.HostName // empty' 2>/dev/null)
+    fi
+    
+    # Fallback to grep if jq failed or not available
+    if [ -z "$hostname" ]; then
+        hostname=$(tailscale status 2>/dev/null | grep -o '[a-z0-9-]*\.tail[a-z0-9]*\.ts\.net' | head -1)
+    fi
+    
+    echo "$hostname"
+}
+
 print_banner() {
     echo "================================================"
     echo "  TeslaUSB Remote Access Setup"
@@ -92,15 +108,7 @@ setup_tailscale() {
             tailscale status | head -5
             echo ""
             
-            # Try to get hostname with jq first, fallback to grep if jq not available
-            if command -v jq &> /dev/null; then
-                TAILSCALE_HOSTNAME=$(tailscale status --json 2>/dev/null | jq -r '.Self.HostName // empty' 2>/dev/null)
-            fi
-            
-            # Fallback to grep if jq failed or not available
-            if [ -z "$TAILSCALE_HOSTNAME" ]; then
-                TAILSCALE_HOSTNAME=$(tailscale status 2>/dev/null | grep -o '[a-z0-9-]*\.tail[a-z0-9]*\.ts\.net' | head -1)
-            fi
+            TAILSCALE_HOSTNAME=$(get_tailscale_hostname)
             
             log_info "Your Tailscale hostname: ${GREEN}${TAILSCALE_HOSTNAME}${NC}"
             log_info "Access TeslaUSB at: ${GREEN}http://${TAILSCALE_HOSTNAME}${NC}"
@@ -129,15 +137,7 @@ setup_tailscale() {
     # Get and display the hostname
     sleep 2
     
-    # Try to get hostname with jq first, fallback to grep if jq not available
-    if command -v jq &> /dev/null; then
-        TAILSCALE_HOSTNAME=$(tailscale status --json 2>/dev/null | jq -r '.Self.HostName // empty' 2>/dev/null)
-    fi
-    
-    # Fallback to grep if jq failed or not available
-    if [ -z "$TAILSCALE_HOSTNAME" ]; then
-        TAILSCALE_HOSTNAME=$(tailscale status 2>/dev/null | grep -o '[a-z0-9-]*\.tail[a-z0-9]*\.ts\.net' | head -1)
-    fi
+    TAILSCALE_HOSTNAME=$(get_tailscale_hostname)
     
     if [ -n "$TAILSCALE_HOSTNAME" ]; then
         echo "================================================"
@@ -340,15 +340,7 @@ show_access_info() {
     # Tailscale
     if command -v tailscale &> /dev/null; then
         if tailscale status &> /dev/null; then
-            # Try to get hostname with jq first, fallback to grep if jq not available
-            if command -v jq &> /dev/null; then
-                TAILSCALE_HOSTNAME=$(tailscale status --json 2>/dev/null | jq -r '.Self.HostName // empty' 2>/dev/null)
-            fi
-            
-            # Fallback to grep if jq failed or not available
-            if [ -z "$TAILSCALE_HOSTNAME" ]; then
-                TAILSCALE_HOSTNAME=$(tailscale status 2>/dev/null | grep -o '[a-z0-9-]*\.tail[a-z0-9]*\.ts\.net' | head -1)
-            fi
+            TAILSCALE_HOSTNAME=$(get_tailscale_hostname)
             
             if [ -n "$TAILSCALE_HOSTNAME" ]; then
                 echo "Tailscale VPN Access:"
