@@ -615,6 +615,14 @@ function diagnose {
       else
         echo "ERROR: CIFS archiving selected, but archive not defined in fstab"
       fi
+    elif [ "${ARCHIVE_SYSTEM:-none}" = "nfs" ]
+    then
+      if grep -q '/mnt/archive' /etc/fstab
+      then
+        echo "NFS archiving selected"
+      else
+        echo "ERROR: NFS archiving selected, but archive not defined in fstab"
+      fi
     elif [ "${ARCHIVE_SYSTEM:-none}" = "rclone" ]
     then
       if [ ! -e "/root/.config/rclone/rclone.conf" ]

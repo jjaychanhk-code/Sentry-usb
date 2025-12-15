@@ -280,13 +280,19 @@ video {
   transform: scale(-1, 1); filter: FlipH;
 }
 
+.videoholderparent {
+  display: flex;
+  flex-direction: column;
+}
+
 .videoholder {
   background-color: #333;
   width:100%;
-  height: 100%;
   display: grid;
   grid-template-columns: 33% 34% 33%;
-  grid-template-rows: auto;
+  grid-template-rows: none;
+  overflow: scroll;
+  scrollbar-width: none;
 }
 
 .videoholder.layout1 {
@@ -376,6 +382,7 @@ video {
 .navbar {
   overflow: hidden;
   background-color: #333;
+  min-height: 46px;
 }
 
 .navbar a {
@@ -914,7 +921,7 @@ video {
   </div>
 
   <div class="tab content7">
-    <div style="width:100%;height:100%;background:#333;" onmousemove="showcontrols()">
+    <div class="videoholderparent" style="width:100%;height:100%;background:#333;" onmousemove="showcontrols()">
       <div class="navbar">
         <div class="noclips">Loading...</div>
         <div class="subnav">RecentClips
@@ -941,58 +948,56 @@ video {
           </div>
         </div>
       </div>
-      <div>
-        <div class="videoholder layout3">
-          <video disableRemotePlayback playsinline id="leftrepeaterview" class="videogriditem leftrepeaterview" style="z-index:1;"></video>
-          <canvas id="leftrepeaterviewfreeze" class="videogriditem leftrepeaterview"  style="z-index:0;"></canvas>
-          
-          <video disableRemotePlayback playsinline id="leftpillarview" class="videogriditem leftpillarview" style="z-index:1;"></video>
-          <canvas id="leftpillarviewfreeze" class="videogriditem leftpillarview"  style="z-index:0;"></canvas>
+      <div class="videoholder layout3">
+        <video disableRemotePlayback playsinline id="leftrepeaterview" class="videogriditem leftrepeaterview" style="z-index:1;"></video>
+        <canvas id="leftrepeaterviewfreeze" class="videogriditem leftrepeaterview"  style="z-index:0;"></canvas>
 
-          <video disableRemotePlayback playsinline id="frontview" class="videogriditem frontview" style="z-index:1;"></video>
-          <canvas id="frontviewfreeze" class="videogriditem frontview" style="z-index:0;"></canvas>
+        <video disableRemotePlayback playsinline id="leftpillarview" class="videogriditem leftpillarview" style="z-index:1;"></video>
+        <canvas id="leftpillarviewfreeze" class="videogriditem leftpillarview"  style="z-index:0;"></canvas>
 
-          <video disableRemotePlayback playsinline id="rightrepeaterview" class="videogriditem rightrepeaterview" style="z-index:1;"></video>
-          <canvas id="rightrepeaterviewfreeze" class="videogriditem rightrepeaterview" style="z-index:0;"></canvas>
-          
-          <video disableRemotePlayback playsinline id="rightpillarview" class="videogriditem rightpillarview" style="z-index:1;"></video>
-          <canvas id="rightpillarviewfreeze" class="videogriditem rightpillarview" style="z-index:0;"></canvas>
-          
-          <div class="videogriditem mapview" style="margin:0px;z-index:0;">
-            <iframe id="sentrymap"></iframe>
+        <video disableRemotePlayback playsinline id="frontview" class="videogriditem frontview" style="z-index:1;"></video>
+        <canvas id="frontviewfreeze" class="videogriditem frontview" style="z-index:0;"></canvas>
+
+        <video disableRemotePlayback playsinline id="rightrepeaterview" class="videogriditem rightrepeaterview" style="z-index:1;"></video>
+        <canvas id="rightrepeaterviewfreeze" class="videogriditem rightrepeaterview" style="z-index:0;"></canvas>
+
+        <video disableRemotePlayback playsinline id="rightpillarview" class="videogriditem rightpillarview" style="z-index:1;"></video>
+        <canvas id="rightpillarviewfreeze" class="videogriditem rightpillarview" style="z-index:0;"></canvas>
+
+        <div class="videogriditem mapview" style="margin:0px;z-index:0;">
+          <iframe id="sentrymap"></iframe>
+        </div>
+
+        <video disableRemotePlayback playsinline id="backview" class="videogriditem backview" style="z-index:1;"></video>
+        <canvas id="backviewfreeze" class="videogriditem backview" style="z-index:0;"></canvas>
+
+        <div id="infoholder" class="videogriditem infoview" style="margin-left:12px;color:white;">
+          <div id="sequencelocation" style="margin-top:8px;margin-bottom:8px;"></div>
+          <div id="segmentname" style="margin-top:8px;margin-bottom:8px;"></div>
+          <div style="margin-top:8px;">
+            <span id="currenttime"></span><span id="totaltime"></span>
+            <div id="debuginfo" style="margin-top:20px;"></div>
           </div>
+        </div>
 
-          <video disableRemotePlayback playsinline id="backview" class="videogriditem backview" style="z-index:1;"></video>
-          <canvas id="backviewfreeze" class="videogriditem backview" style="z-index:0;"></canvas>
-
-          <div id="infoholder" class="videogriditem infoview" style="margin-left:12px;color:white;">
-            <div id="sequencelocation" style="margin-top:8px;margin-bottom:8px;"></div>
-            <div id="segmentname" style="margin-top:8px;margin-bottom:8px;"></div>
-            <div style="margin-top:8px;">
-              <span id="currenttime"></span><span id="totaltime"></span>
-              <div id="debuginfo" style="margin-top:20px;"></div>
-            </div>
+        <div id="videocontrols" >
+          <input type="range" class="slider" id="position" name="position"
+                 min="0" max="60" style="width:90%;max-width:600px;height:30px;z-index:2;"
+                 onmousemove="slidermousemove(event)">
+          <div class="sliderpositionbubble">00:00</div>
+          <div style="width:90%;max-width:600px;height:26px;margin-top:-24px;">
+            <canvas id="tickmarkscanvas" style="width:100%;height:100%;"></canvas>
           </div>
-
-          <div id="videocontrols" >
-            <input type="range" class="slider" id="position" name="position"
-                   min="0" max="60" style="width:90%;max-width:600px;height:30px;z-index:2;"
-                   onmousemove="slidermousemove(event)">
-            <div class="sliderpositionbubble">00:00</div>
-            <div style="width:90%;max-width:600px;height:26px;margin-top:-24px;">
-              <canvas id="tickmarkscanvas" style="width:100%;height:100%;"></canvas>
-            </div>
-            <div class="buttoncontainer">
-              <button id="skipback" class="flatbutton skipback" onclick="skipBack()">
-                <svg class="mediabutton"><path d="M 19,28 A 10,10 0 1 0 9,18 M 8,18 10,18 9,20 z"></path></svg>
-              </button>
-              <button id="playpause" class="flatbutton play" onclick="startPlaying()">
-                <svg class="mediabutton"><path></path></svg>
-              </button>
-              <button id="skipforward" class="flatbutton skipforward" onclick="skipForward()">
-                <svg class="mediabutton"><path d="M 19,28 A 10,10 0 1 1 29,18 M 28,18 30,18 29,20 z"></path></svg>
-              </button>
-            </div>
+          <div class="buttoncontainer">
+            <button id="skipback" class="flatbutton skipback" onclick="skipBack()">
+              <svg class="mediabutton"><path d="M 19,28 A 10,10 0 1 0 9,18 M 8,18 10,18 9,20 z"></path></svg>
+            </button>
+            <button id="playpause" class="flatbutton play" onclick="startPlaying()">
+              <svg class="mediabutton"><path></path></svg>
+            </button>
+            <button id="skipforward" class="flatbutton skipforward" onclick="skipForward()">
+              <svg class="mediabutton"><path d="M 19,28 A 10,10 0 1 1 29,18 M 28,18 30,18 29,20 z"></path></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -1125,7 +1130,7 @@ function setLayout(layout) {
     backview.classList.remove("flipped");
     videogrid.classList="videoholder layout5";
   } else if (layout == 6) {
-    // map-front-info on top, pillars on the side, repeaters and rear on bottom 
+    // map-front-info on top, pillars on the side, repeaters and rear on bottom
     videogrid.classList="videoholder layout6";
   } else {
     layout = 3;
@@ -2075,7 +2080,7 @@ class VideoSegment {
     } else {
       videoelems[5].removeAttribute('src');
     }
-    
+
     this.numangles = 0;
     for (var i=0; i < 6;i++) {
       var v = videoelems[i];

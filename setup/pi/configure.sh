@@ -139,6 +139,14 @@ function check_archive_configs () {
             check_variable "ARCHIVE_SERVER"
             check_rsync
             ;;
+         nfs)
+            if [ -e /backingfiles/cam_disk.bin ]
+            then
+              check_variable "SHARE_NAME"
+            fi
+            check_variable "ARCHIVE_SERVER"
+            check_rsync
+            ;;
         none)
             export ARCHIVE_SERVER=localhost
             ;;
@@ -163,6 +171,9 @@ function get_archive_module () {
         cifs)
             echo "run/cifs_archive"
             ;;
+         nfs)
+            echo "run/nfs_archive"
+            ;;
         none)
             echo "run/none_archive"
             ;;
@@ -181,7 +192,10 @@ function pip3_install () {
 function check_at_most_one_wake_api () {
   if [[ ( -n "${TESSIE_API_TOKEN:+x}" && -n "${TESLAFI_API_TOKEN:+x}" ) ||
         ( -n "${TESSIE_API_TOKEN:+x}" && -n "${TESLA_BLE_VIN:+x}" ) ||
-        ( -n "${TESLAFI_API_TOKEN:+x}" && -n "${TESLA_BLE_VIN:+x}" ) ]]
+        ( -n "${TESLAFI_API_TOKEN:+x}" && -n "${TESLA_BLE_VIN:+x}" ) ||
+        ( -n "${KEEP_AWAKE_WEBHOOK_URL:+x}" && -n "${TESLAFI_API_TOKEN:+x}" ) ||
+        ( -n "${KEEP_AWAKE_WEBHOOK_URL:+x}" && -n "${TESLA_BLE_VIN:+x}" ) ||
+        ( -n "${KEEP_AWAKE_WEBHOOK_URL:+x}" && -n "${TESSIE_API_TOKEN:+x}" )]]
   then
     log_progress "STOP: You're trying to set up multiple control providers at the same time."
     log_progress "Only 1 can be enabled at a time."
@@ -305,6 +319,21 @@ function check_and_configure_tesla_ble () {
   fi
 }
 
+function check_awake_webhook () {
+  if [[ ( -n "${KEEP_AWAKE_WEBHOOK_URL:+x}" ) ]]
+  then
+    check_variable "SENTRY_CASE"
+    if [[ "$SENTRY_CASE" != 1 && "$SENTRY_CASE" != 2 && "$SENTRY_CASE" != 3 ]]; then
+      log_progress "STOP: invalid SENTRY_CASE for Webhook."
+      exit 1
+    fi
+
+    log_progress "Awake Webhook enabled."
+  else
+    log_progress "Awake Webhook not enabled because no webhook URL was provided."
+  fi
+}
+
 function check_and_install_temperature_monitor () {
   local install_path="$1"
 
@@ -347,7 +376,7 @@ function install_archive_scripts () {
   copy_script "$archive_module"/connect-archive.sh "$install_path"
   copy_script "$archive_module"/disconnect-archive.sh "$install_path"
   copy_script "$archive_module"/archive-is-reachable.sh "$install_path"
-  if [ -n "${MUSIC_SHARE_NAME:+x}" ] && grep cifs <<< "$archive_module"
+  if [ -n "${MUSIC_SHARE_NAME:+x}" ] && grep -E "cifs|nfs" <<< "$archive_module"
   then
     copy_script "$archive_module"/copy-music.sh "$install_path"
   fi
@@ -757,6 +786,7 @@ then
   check_teslafi_api
   check_tessie_api
   check_and_configure_tesla_ble /root/bin
+  check_awake_webhook
 fi
 check_and_install_temperature_monitor /root/bin
 check_and_configure_pushover

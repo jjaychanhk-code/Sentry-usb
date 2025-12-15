@@ -78,9 +78,9 @@ then
       exit 1
       ;;
   esac
-elif [ "${ARCHIVE_SYSTEM:-none}" = "cifs" ]
+elif [ "${ARCHIVE_SYSTEM:-none}" = "cifs" ] || [ "${ARCHIVE_SYSTEM:-none}" = "nfs" ]
 then
-  # For CIFS 
+  # For CIFS and NFS
   [[ -n "${SHARE_NAME:-}" && -f /backingfiles/cam_disk.bin ]] && export ARCHIVE_MOUNT=/mnt/archive
   [[ -n "${MUSIC_SHARE_NAME:-}" && -f /backingfiles/music_disk.bin ]] && export MUSIC_ARCHIVE_MOUNT=/mnt/musicarchive
 fi
