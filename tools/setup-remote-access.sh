@@ -91,7 +91,17 @@ setup_tailscale() {
             log_info "Tailscale is already connected"
             tailscale status | head -5
             echo ""
-            TAILSCALE_HOSTNAME=$(tailscale status --json | grep -o '"HostName":"[^"]*"' | cut -d'"' -f4 | head -1)
+            
+            # Try to get hostname with jq first, fallback to grep if jq not available
+            if command -v jq &> /dev/null; then
+                TAILSCALE_HOSTNAME=$(tailscale status --json 2>/dev/null | jq -r '.Self.HostName // empty' 2>/dev/null)
+            fi
+            
+            # Fallback to grep if jq failed or not available
+            if [ -z "$TAILSCALE_HOSTNAME" ]; then
+                TAILSCALE_HOSTNAME=$(tailscale status 2>/dev/null | grep -o '[a-z0-9-]*\.tail[a-z0-9]*\.ts\.net' | head -1)
+            fi
+            
             log_info "Your Tailscale hostname: ${GREEN}${TAILSCALE_HOSTNAME}${NC}"
             log_info "Access TeslaUSB at: ${GREEN}http://${TAILSCALE_HOSTNAME}${NC}"
             echo ""
@@ -118,10 +128,15 @@ setup_tailscale() {
     
     # Get and display the hostname
     sleep 2
-    TAILSCALE_HOSTNAME=$(tailscale status --json 2>/dev/null | grep -o '"HostName":"[^"]*"' | cut -d'"' -f4 | head -1)
     
+    # Try to get hostname with jq first, fallback to grep if jq not available
+    if command -v jq &> /dev/null; then
+        TAILSCALE_HOSTNAME=$(tailscale status --json 2>/dev/null | jq -r '.Self.HostName // empty' 2>/dev/null)
+    fi
+    
+    # Fallback to grep if jq failed or not available
     if [ -z "$TAILSCALE_HOSTNAME" ]; then
-        TAILSCALE_HOSTNAME=$(tailscale status | grep -o '[a-z0-9-]*\.tail[a-z0-9]*\.ts\.net' | head -1)
+        TAILSCALE_HOSTNAME=$(tailscale status 2>/dev/null | grep -o '[a-z0-9-]*\.tail[a-z0-9]*\.ts\.net' | head -1)
     fi
     
     if [ -n "$TAILSCALE_HOSTNAME" ]; then
@@ -213,9 +228,10 @@ setup_nginx() {
     
     htpasswd -c /etc/nginx/.htpasswd "$webuser"
     
-    # Create nginx config
-    log_info "Creating Nginx configuration..."
-    cat > /etc/nginx/sites-available/teslausb <<EOF
+    # Create nginx config for SSL
+    log_info "Creating Nginx SSL configuration..."
+    cat > /etc/nginx/sites-available/teslausb-ssl <<EOF
+# HTTP server - redirect to HTTPS
 server {
     listen 80;
     server_name $domain;
@@ -229,9 +245,16 @@ server {
     }
 }
 
+# HTTPS server with authentication
 server {
     listen 443 ssl http2;
     server_name $domain;
+    
+    root /var/www/html;
+    index index.html;
+    
+    client_max_body_size 0;
+    fastcgi_request_buffering off;
     
     # SSL configuration (will be managed by certbot)
     
@@ -244,25 +267,41 @@ server {
     auth_basic "Tesla Dashcam Access";
     auth_basic_user_file /etc/nginx/.htpasswd;
     
+    # Serve static files
     location / {
-        proxy_pass http://localhost:80;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_read_timeout 300s;
+        try_files \$uri \$uri/ =404;
     }
     
+    # CGI scripts
+    location /cgi-bin/ {
+        gzip off;
+        root /var/www/html;
+        fastcgi_pass unix:/var/run/fcgiwrap.socket;
+        include /etc/nginx/fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        fastcgi_max_temp_file_size 0;
+        fastcgi_read_timeout 300s;
+    }
+    
+    # TeslaCam videos
+    location /TeslaCam/ {
+        root /var/www/html;
+        fancyindex on;
+        fancyindex_css_href /fancyindex.css;
+    }
+    
+    # Optimize video delivery
     location ~* \.(mp4|webm)$ {
-        proxy_pass http://localhost:80;
-        proxy_buffering off;
+        root /var/www/html;
         add_header Cache-Control "public, max-age=3600";
     }
 }
 EOF
     
-    # Enable site
-    ln -sf /etc/nginx/sites-available/teslausb /etc/nginx/sites-enabled/
+    # Disable default TeslaUSB HTTP config and enable SSL config
+    rm -f /etc/nginx/sites-enabled/default
+    rm -f /etc/nginx/sites-enabled/teslausb
+    ln -sf /etc/nginx/sites-available/teslausb-ssl /etc/nginx/sites-enabled/
     
     # Test config
     nginx -t
@@ -301,7 +340,16 @@ show_access_info() {
     # Tailscale
     if command -v tailscale &> /dev/null; then
         if tailscale status &> /dev/null; then
-            TAILSCALE_HOSTNAME=$(tailscale status | grep -o '[a-z0-9-]*\.tail[a-z0-9]*\.ts\.net' | head -1)
+            # Try to get hostname with jq first, fallback to grep if jq not available
+            if command -v jq &> /dev/null; then
+                TAILSCALE_HOSTNAME=$(tailscale status --json 2>/dev/null | jq -r '.Self.HostName // empty' 2>/dev/null)
+            fi
+            
+            # Fallback to grep if jq failed or not available
+            if [ -z "$TAILSCALE_HOSTNAME" ]; then
+                TAILSCALE_HOSTNAME=$(tailscale status 2>/dev/null | grep -o '[a-z0-9-]*\.tail[a-z0-9]*\.ts\.net' | head -1)
+            fi
+            
             if [ -n "$TAILSCALE_HOSTNAME" ]; then
                 echo "Tailscale VPN Access:"
                 echo "  http://${TAILSCALE_HOSTNAME}"
@@ -316,12 +364,16 @@ show_access_info() {
     # Nginx
     if systemctl is-active --quiet nginx; then
         echo "Nginx: Running"
-        if [ -f /etc/nginx/sites-enabled/teslausb ]; then
-            DOMAIN=$(grep server_name /etc/nginx/sites-enabled/teslausb | head -2 | tail -1 | awk '{print $2}' | tr -d ';')
-            if [ -n "$DOMAIN" ]; then
-                echo "Public Access: https://$DOMAIN"
+        # Check for both old and new config filenames
+        for config_file in /etc/nginx/sites-enabled/teslausb-ssl /etc/nginx/sites-enabled/teslausb; do
+            if [ -f "$config_file" ]; then
+                DOMAIN=$(grep server_name "$config_file" | grep -v '#' | head -2 | tail -1 | awk '{print $2}' | tr -d ';')
+                if [ -n "$DOMAIN" ] && [ "$DOMAIN" != "_" ]; then
+                    echo "Public Access: https://$DOMAIN"
+                    break
+                fi
             fi
-        fi
+        done
         echo ""
     fi
     
