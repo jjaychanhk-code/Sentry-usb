@@ -1014,6 +1014,10 @@ video {
         <input type="checkbox" id="altui" name="altui" value="1">
         <label for="altui">Use alternative web interface</label>
       </div>
+      <div style="width:100%;padding:10px">
+        <input type="checkbox" id="autorefresh" name="autorefresh" value="1">
+        <label for="autorefresh">Auto-refresh video list (check for new videos every 5 minutes)</label>
+      </div>
       <div style="text-align:right;padding-top:30px;">
         <button onclick="cancelsettings()">Cancel</button> <button onclick="confirmsettings()">OK</button>
       </div>
@@ -1819,6 +1823,8 @@ function initialize() {
 function showsettings() {
   var altui = document.getElementById('altui');
   altui.checked = (localStorageGet("usealtui") == "true");
+  var autorefresh = document.getElementById('autorefresh');
+  autorefresh.checked = (localStorageGet("autorefresh") == "true");
   var overlay = document.getElementById("settingsoverlay");
   overlay.style.display = "block";
 }
@@ -1835,11 +1841,40 @@ function cancelsettings() {
 function confirmsettings() {
   var usealtui = document.getElementById('altui').checked;
   localStorageSet("usealtui", usealtui);
+  var autorefresh = document.getElementById('autorefresh').checked;
+  localStorageSet("autorefresh", autorefresh);
+  if (autorefresh) {
+    setupAutoRefresh();
+  } else {
+    clearAutoRefresh();
+  }
   if (usealtui) {
     document.location.replace('/new/?source=legacy');
     nonExistentFunction();
   }
   closesettings();
+}
+
+var autoRefreshTimer = null;
+
+function setupAutoRefresh() {
+  log("Setting up auto-refresh");
+  clearAutoRefresh();
+  // Refresh every 5 minutes (300000 ms)
+  autoRefreshTimer = setInterval(function() {
+    log("Auto-refreshing video list...");
+    // Reload the page to check for new videos
+    window.location.reload();
+  }, 300000);
+  log("Auto-refresh enabled (every 5 minutes)");
+}
+
+function clearAutoRefresh() {
+  if (autoRefreshTimer !== null) {
+    clearInterval(autoRefreshTimer);
+    autoRefreshTimer = null;
+    log("Auto-refresh disabled");
+  }
 }
 
 function inIframe () {
@@ -2862,6 +2897,11 @@ readfile({url:'cgi-bin/videolist.sh', callback:function(value) {
   }
   nr.innerHTML = "No recordings";
   initialize();
+  
+  // Initialize auto-refresh if enabled
+  if (localStorageGet("autorefresh") == "true") {
+    setupAutoRefresh();
+  }
 }
 });
 
