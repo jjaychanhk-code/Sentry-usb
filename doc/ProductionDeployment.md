@@ -2,6 +2,10 @@
 
 This guide explains how to deploy TeslaUSB in a production environment to allow customers to view their Tesla Sentry and dashcam videos remotely.
 
+> **🇨🇳 中国用户注意 / Note for Chinese Users:** 如果您在中国大陆，建议使用阿里云或腾讯云部署以获得更好的网络性能。请参见 [中国云平台部署指南](ChineseCloudDeployment.md)。
+>
+> If you're in mainland China, we recommend using Alibaba Cloud or Tencent Cloud for better network performance. See the [Chinese Cloud Platform Deployment Guide](ChineseCloudDeployment.md).
+
 ## Overview
 
 TeslaUSB provides a web interface that allows viewing of recorded Sentry clips, SavedClips, and RecentClips. This guide covers how to:

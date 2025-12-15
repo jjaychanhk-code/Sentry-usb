@@ -2,6 +2,10 @@
 
 This guide helps you access your Tesla Sentry and dashcam videos remotely.
 
+> **🇨🇳 中国用户 / Chinese Users:** 如果您在中国大陆，使用阿里云或腾讯云可以获得更快的访问速度。请参见[中国云平台部署指南](ChineseCloudDeployment.md)。
+>
+> If you're in mainland China, using Alibaba Cloud or Tencent Cloud provides faster access. See [Chinese Cloud Deployment Guide](ChineseCloudDeployment.md).
+
 ## What You'll Be Able To Do
 
 ✓ View Sentry Mode events from anywhere  
