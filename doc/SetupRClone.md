@@ -2,6 +2,16 @@
 
 This guide will show you how to install and configure [rclone](https://rclone.org/) to archive your saved TeslaCam footage on one of a number of different remote storage services including Google Drive, S3 and Dropbox.
 
+## China Users / 中国用户
+
+If you're using the production build or prefer Chinese cloud storage services (Aliyun OSS, Tencent COS, Huawei OBS, etc.), see the [China configuration templates](../production/files/rclone_templates.conf) for pre-configured rclone settings.
+
+Pre-built images include rclone and templates for Chinese cloud providers. Run `configure-rclone` for an interactive setup wizard.
+
+如果您使用产品化构建版本或偏好中国云存储服务（阿里云OSS、腾讯云COS、华为云OBS等），请参阅[中国配置模板](../production/files/rclone_templates.conf)获取预配置的rclone设置。
+
+预构建镜像已包含rclone和中国云存储模板。运行 `configure-rclone` 启动交互式配置向导。
+
 # Easy rclone setup
 
 The easiest way to to configure teslausb for rclone is:

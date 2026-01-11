@@ -10,3 +10,5 @@ libnginx-mod-http-fancyindex
 libfuse-dev
 exfatprogs
 sntp
+rclone
+jq

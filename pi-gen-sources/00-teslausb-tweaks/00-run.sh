@@ -6,6 +6,16 @@ install -m 666 files/wpa_supplicant.conf.sample           "${ROOTFS_DIR}/boot/fi
 install -m 666 files/run_once                             "${ROOTFS_DIR}/boot/firmware"
 install -d "${ROOTFS_DIR}/root/bin"
 
+# Install China-optimized configuration template
+install -m 666 files/teslausb_setup_china.conf.sample     "${ROOTFS_DIR}/boot/firmware/"
+
+# Install rclone configuration templates
+install -d "${ROOTFS_DIR}/root/.config/rclone"
+install -m 600 files/rclone_templates.conf                "${ROOTFS_DIR}/root/.config/rclone/templates.conf"
+
+# Install first-boot setup script
+install -m 755 files/first-boot-setup.sh                  "${ROOTFS_DIR}/root/bin/"
+
 # ensure dwc2 module is loaded
 echo "dtoverlay=dwc2" >> "${ROOTFS_DIR}/boot/firmware/config.txt"
 
